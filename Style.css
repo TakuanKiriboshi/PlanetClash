@@ -1,0 +1,329 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 48%, rgba(40, 83, 130, .28), transparent 34%),
+        #07111f;
+    color: #f3f7fb;
+    font-family: "Trebuchet MS", "Yu Gothic", sans-serif;
+}
+
+#game {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    min-height: 360px;
+    overflow: hidden;
+    cursor: crosshair;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#game::before {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(#fff 1px, transparent 1px);
+    background-size: 77px 77px;
+    opacity: .14;
+    content: "";
+}
+
+#ball {
+    position: absolute;
+
+    width: 80px;
+    height: 80px;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        135deg,
+        #8ec8ff,
+        #2d84dd
+    );
+
+    box-shadow: 0 10px 20px rgba(0, 0, 0, .25);
+
+    left: 50%;
+    top: 50%;
+
+    touch-action: none;
+
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    cursor: grab;
+    transition: box-shadow .15s ease;
+}
+
+#ball:active,
+#ball.is-attacking {
+    cursor: grabbing;
+    box-shadow: 0 0 0 8px rgba(255, 218, 112, .2), 0 0 32px rgba(115, 190, 255, .9);
+}
+
+#score {
+    position: absolute;
+    top: 24px;
+    left: 28px;
+    z-index: 5;
+    color: #9fb8d1;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: .16em;
+}
+
+#score-value {
+    display: inline-block;
+    min-width: 3ch;
+    margin-left: 8px;
+    color: #fff;
+    font-size: 24px;
+    letter-spacing: .04em;
+}
+
+#speed-meter {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    z-index: 5;
+    width: min(42vw, 280px);
+    transform: translateX(-50%);
+}
+
+.meter-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 7px;
+    color: #9fb8d1;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: .14em;
+}
+
+.meter-heading strong {
+    color: #d8e6f2;
+    font-size: 10px;
+    font-weight: normal;
+    letter-spacing: .06em;
+}
+
+#speed-value {
+    color: #fff;
+    font-size: 13px;
+}
+
+.meter-track {
+    position: relative;
+    height: 7px;
+    border: 1px solid rgba(159, 184, 209, .38);
+    background: rgba(18, 39, 61, .9);
+}
+
+#speed-fill {
+    width: 0%;
+    height: 100%;
+    background: #8ec8ff;
+    transition: width .08s linear, background-color .15s ease;
+}
+
+.attack-marker {
+    position: absolute;
+    top: -4px;
+    left: 41.67%;
+    width: 1px;
+    height: 13px;
+    background: #e29a5f;
+}
+
+#speed-meter.is-attacking #speed-fill {
+    background: #f1b05f;
+    box-shadow: 0 0 12px rgba(241, 176, 95, .8);
+}
+
+.afterimage {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 2px solid rgba(241, 176, 95, .72);
+    border-radius: 50%;
+    background: rgba(142, 200, 255, .12);
+    box-shadow: 0 0 24px rgba(241, 176, 95, .5);
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(.85);
+    z-index: 1;
+}
+
+.score-popup {
+    position: absolute;
+    z-index: 4;
+    color: #ffe0a3;
+    font-size: 17px;
+    font-weight: bold;
+    pointer-events: none;
+    text-shadow: 0 0 8px rgba(241, 176, 95, .85);
+    transform: translate(-50%, 0);
+    animation: score-rise .7s ease-out forwards;
+}
+
+@keyframes score-rise {
+    from {
+        opacity: 1;
+        transform: translate(-50%, 0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translate(-50%, -32px) scale(1.08);
+    }
+}
+
+#status {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    z-index: 5;
+    color: rgba(224, 237, 248, .65);
+    font-size: 13px;
+    letter-spacing: .1em;
+    transform: translateX(-50%);
+}
+
+.meteor {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    border: 2px solid #d99a5b;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #d99a5b, #70401f 68%);
+    box-shadow: 0 0 14px rgba(211, 117, 49, .7);
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.meteor-green {
+    border-color: #8fe08b;
+    background: radial-gradient(circle at 35% 30%, #9ce88f, #287546 68%);
+    box-shadow: 0 0 16px rgba(104, 224, 120, .8);
+}
+
+.meteor-magenta {
+    border-color: #ff86dc;
+    background: radial-gradient(circle at 35% 30%, #ff9ce2, #9d216e 68%);
+    box-shadow: 0 0 16px rgba(255, 70, 191, .8);
+}
+
+.meteor-comet {
+    border-color: #8edcff;
+    background: radial-gradient(circle at 35% 30%, #d2f4ff, #207bb5 68%);
+    box-shadow: 0 0 14px rgba(78, 196, 255, .9), -14px 0 18px rgba(78, 196, 255, .3);
+}
+
+.meteor-orange {
+    border-color: #ffd08a;
+    background: radial-gradient(circle at 35% 30%, #ffe0a0, #b85216 68%);
+    box-shadow: 0 0 18px rgba(255, 142, 42, .95);
+}
+
+.warning-trajectory {
+    position: absolute;
+    height: 3px;
+    border-radius: 999px;
+    background: #ff8a24;
+    box-shadow: 0 0 8px rgba(255, 115, 21, .95);
+    pointer-events: none;
+    transform-origin: 0 50%;
+    z-index: 0;
+    animation: warning-blink .18s steps(2, end) infinite;
+}
+
+@keyframes warning-blink {
+    50% {
+        opacity: .18;
+    }
+}
+
+#game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 10;
+    width: min(88vw, 360px);
+    padding: 32px 24px;
+    border: 1px solid rgba(187, 217, 241, .24);
+    background: rgba(7, 17, 31, .92);
+    text-align: center;
+    transform: translate(-50%, -50%);
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+#game-over[hidden] {
+    display: none;
+}
+
+.game-over-label {
+    margin: 0 0 10px;
+    color: #e29a5f;
+    font-size: 12px;
+    letter-spacing: .2em;
+}
+
+#game-over h1 {
+    margin: 0 0 18px;
+    font-size: 28px;
+}
+
+#game-over p:not(.game-over-label) {
+    color: #b2c5d8;
+}
+
+#final-score {
+    display: block;
+    margin-top: 4px;
+    color: #fff;
+    font-size: 34px;
+}
+
+#restart {
+    margin-top: 14px;
+    padding: 11px 28px;
+    border: 0;
+    border-radius: 4px;
+    background: #d89558;
+    color: #1a160f;
+    cursor: pointer;
+    font: inherit;
+    font-weight: bold;
+}
+
+#restart:hover {
+    background: #f0b273;
+}
+
+@media (max-width: 480px) {
+    #score {
+        top: 18px;
+        left: 18px;
+    }
+
+    #status {
+        bottom: 18px;
+        white-space: nowrap;
+    }
+
+    #speed-meter {
+        top: 20px;
+        width: 42vw;
+        min-width: 150px;
+    }
+}
