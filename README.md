@@ -1,2 +1,0 @@
-# PlanetClash
-My game
