@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+         content="width=device-width, initial-scale=1.0">
+<title>Planet Clash</title>
+<link rel="stylesheet" href="Style.css">
+</head>
+<body>
+<main id="game" aria-label="Planet Clash">
+    <button id="menu-toggle" type="button" aria-label="メニューを開く" aria-controls="pause-menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div id="score">SCORE <span id="score-value">0</span></div>
+    <section id="speed-meter" aria-label="速度メーター">
+        <div class="meter-heading">
+            <span>VELOCITY</span>
+            <strong><span id="speed-value">0.0</span> / ATTACK</strong>
+        </div>
+        <div class="meter-track">
+            <div id="speed-fill"></div>
+            <span class="attack-marker" aria-hidden="true"></span>
+        </div>
+    </section>
+    <div id="status" aria-live="polite">隕石を迎撃しよう</div>
+    <div id="ball" aria-label="地球" role="button" tabindex="0"></div>
+    <section id="pause-menu" aria-label="ポーズメニュー" hidden>
+        <div class="pause-menu-panel">
+            <p class="game-over-label">PLANET CLASH</p>
+            <h1>PAUSED</h1>
+            <button id="resume" type="button">再開</button>
+            <button id="menu-restart" type="button">リトライ</button>
+            <p class="pause-menu-hint">Pキーでメニューを開閉</p>
+        </div>
+    </section>
+    <section id="game-over" hidden>
+        <p class="game-over-label">PLANET DESTROYED</p>
+        <h1>ゲームオーバー</h1>
+        <p>最終スコア <strong id="final-score">0</strong></p>
+        <button id="restart" type="button">リトライ</button>
+    </section>
+</main>
+<script src="Code.Js"></script>
+</body>
+</html>
