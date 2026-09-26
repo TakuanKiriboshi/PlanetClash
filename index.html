@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+         content="width=device-width, initial-scale=1.0">
+<title>Planet Clash</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="game" aria-label="Planet Clash">
+    <section id="title-screen" aria-label="タイトル画面">
+        <div class="title-screen-content">
+            <p class="game-over-label">ARCADE DEFENSE</p>
+            <h1>PLANET<br>CLASH</h1>
+            <button id="start-game" type="button">クリックして開始</button>
+            <div class="audio-settings" aria-label="音量設定">
+                <label class="audio-setting">
+                    <span>BGM</span>
+                    <input type="range" min="0" max="100" value="50" data-audio-volume="bgm" aria-label="BGM音量">
+                    <output>50%</output>
+                </label>
+                <label class="audio-setting">
+                    <span>SE</span>
+                    <input type="range" min="0" max="100" value="70" data-audio-volume="effects" aria-label="SE音量">
+                    <output>70%</output>
+                </label>
+                <button class="audio-sample-button" type="button" data-play-comet-sample>効果音を試聴</button>
+            </div>
+            <p class="title-screen-hint">クリックまたは任意のキーで開始</p>
+        </div>
+        <p class="title-screen-credits">CREATED BY <span>TakuanKiriboshi</span> | SOUNDS BY<span>友人N</span></p>
+    </section>
+    <button id="menu-toggle" type="button" aria-label="メニューを開く" aria-controls="pause-menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    <div id="score">SCORE <span id="score-value">0</span></div>
+    <section id="speed-meter" aria-label="速度メーター">
+        <div class="meter-heading">
+            <span>VELOCITY</span>
+            <strong><span id="speed-value">0.0</span> / ATTACK</strong>
+        </div>
+        <div class="meter-track">
+            <div id="speed-fill"></div>
+            <span class="attack-marker" aria-hidden="true"></span>
+        </div>
+    </section>
+    <div id="status" aria-live="polite">隕石を迎撃しよう</div>
+    <div id="ball" aria-label="地球" role="button" tabindex="0"></div>
+    <section id="pause-menu" aria-label="ポーズメニュー" hidden>
+        <div class="pause-menu-panel">
+            <p class="game-over-label">PLANET CLASH</p>
+            <h1>PAUSED</h1>
+            <button id="resume" type="button">再開</button>
+            <button id="menu-restart" type="button">リトライ</button>
+            <div class="audio-settings" aria-label="音量設定">
+                <label class="audio-setting">
+                    <span>BGM</span>
+                    <input type="range" min="0" max="100" value="50" data-audio-volume="bgm" aria-label="BGM音量">
+                    <output>50%</output>
+                </label>
+                <label class="audio-setting">
+                    <span>SE</span>
+                    <input type="range" min="0" max="100" value="70" data-audio-volume="effects" aria-label="SE音量">
+                    <output>70%</output>
+                </label>
+                <button class="audio-sample-button" type="button" data-play-comet-sample>効果音を試聴</button>
+            </div>
+            <p class="pause-menu-hint">Pキーでメニューを開閉</p>
+        </div>
+    </section>
+    <section id="game-over" hidden>
+        <p class="game-over-label">PLANET DESTROYED</p>
+        <h1>ゲームオーバー</h1>
+        <p>最終スコア <strong id="final-score">0</strong></p>
+        <button id="restart" type="button">リトライ</button>
+    </section>
+</main>
+<audio id="bgm" src="In The Vast Universe.mp3" preload="none"></audio>
+<audio id="meteor-clash-sound" src="meteor_clash.mp3" preload="auto"></audio>
+<audio id="comet-clash-sound" src="comet_clash.mp3" preload="auto"></audio>
+<audio id="meteor-absorbed-sound" src="meteor_absorbed.mp3" preload="auto"></audio>
+<script src="code.Js"></script>
+</body>
+</html>
