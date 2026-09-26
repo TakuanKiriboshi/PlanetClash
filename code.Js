@@ -84,8 +84,8 @@ const meteorDefinitions = [
     },
     {
         id: "purple",
-        minScore: 0,//30000,
-        spawnChance: 0.5,//0.01,
+        minScore: 30000,
+        spawnChance: 0.01,
         speed: 2.0,
         scoreMultiplier: 1,
         movement: "straight",
