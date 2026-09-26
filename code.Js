@@ -125,7 +125,7 @@ let bgmBufferPromise = null;
 let bgmSource = null;
 let bgmGainNode = null;
 let bgmVolume = 0.5;
-let soundEffectsVolume = 0.7;
+let soundEffectsVolume = 0.07;
 const bgmLoopStartSeconds = 0;
 const bgmLoopEndSeconds = null;
 
