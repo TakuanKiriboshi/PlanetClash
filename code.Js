@@ -124,15 +124,45 @@ let bgmAudioContext = null;
 let bgmBufferPromise = null;
 let bgmSource = null;
 let bgmGainNode = null;
+let soundEffectsGainNode = null;
+const audioBuffers = new Map();
+const audioBufferPromises = new Map();
 let bgmVolume = 0.5;
-let soundEffectsVolume = 0.07;
+let soundEffectsVolume = 0.7;
 const bgmLoopStartSeconds = 0;
 const bgmLoopEndSeconds = null;
 
 function playSound(soundElement) {
+    const buffer = audioBuffers.get(soundElement.id);
+    if (buffer && soundEffectsGainNode && bgmAudioContext) {
+        const source = bgmAudioContext.createBufferSource();
+        source.buffer = buffer;
+        source.connect(soundEffectsGainNode);
+        source.start();
+        return;
+    }
+
     const sound = soundElement.cloneNode();
     sound.volume = soundEffectsVolume;
     sound.play().catch(() => {});
+}
+
+function loadAudioBuffer(soundElement) {
+    if (audioBuffers.has(soundElement.id)) return Promise.resolve(audioBuffers.get(soundElement.id));
+    if (audioBufferPromises.has(soundElement.id)) return audioBufferPromises.get(soundElement.id);
+
+    const promise = fetch(soundElement.src)
+        .then((response) => {
+            if (!response.ok) throw new Error(`${soundElement.id} could not be loaded`);
+            return response.arrayBuffer();
+        })
+        .then((audioData) => bgmAudioContext.decodeAudioData(audioData))
+        .then((audioBuffer) => {
+            audioBuffers.set(soundElement.id, audioBuffer);
+            return audioBuffer;
+        });
+    audioBufferPromises.set(soundElement.id, promise);
+    return promise;
 }
 
 function setAudioVolume(type, volume) {
@@ -144,6 +174,9 @@ function setAudioVolume(type, volume) {
         bgmElement.volume = volume;
     } else {
         soundEffectsVolume = volume;
+        if (soundEffectsGainNode && bgmAudioContext) {
+            soundEffectsGainNode.gain.setTargetAtTime(volume, bgmAudioContext.currentTime, 0.015);
+        }
     }
 
     document.querySelectorAll(`[data-audio-volume="${type}"]`).forEach((input) => {
@@ -186,14 +219,18 @@ function startBgm() {
         bgmGainNode.gain.value = bgmVolume;
         bgmGainNode.connect(bgmAudioContext.destination);
     }
+    if (!soundEffectsGainNode) {
+        soundEffectsGainNode = bgmAudioContext.createGain();
+        soundEffectsGainNode.gain.value = soundEffectsVolume;
+        soundEffectsGainNode.connect(bgmAudioContext.destination);
+    }
+
+    [meteorClashSound, cometClashSound, meteorAbsorbedSound].forEach((sound) => {
+        loadAudioBuffer(sound).catch(() => {});
+    });
 
     if (!bgmBufferPromise) {
-        bgmBufferPromise = fetch(bgmElement.src)
-            .then((response) => {
-                if (!response.ok) throw new Error("BGM could not be loaded");
-                return response.arrayBuffer();
-            })
-            .then((audioData) => bgmAudioContext.decodeAudioData(audioData));
+        bgmBufferPromise = loadAudioBuffer(bgmElement);
     }
 
     bgmBufferPromise.then((audioBuffer) => {
@@ -310,7 +347,7 @@ function setPauseMenuOpen(open) {
 function updateSpeedMeter() {
     const speed = getBallSpeed();
     speedValueElement.textContent = speed.toFixed(1);
-    speedFillElement.style.width = `${Math.min(speed / maxMeterSpeed * 100, 100)}%`;
+    speedFillElement.style.transform = `scaleX(${Math.min(speed / maxMeterSpeed, 1)})`;
 }
 
 function getSpeedScore() {
