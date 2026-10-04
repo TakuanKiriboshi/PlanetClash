@@ -200,8 +200,17 @@ const audioBuffers = new Map();
 const audioBufferPromises = new Map();
 let bgmVolume = 0.5;
 let soundEffectsVolume = 0.3;
+const endlessBgmVolumeMultiplier = 2;
 const bgmLoopStartSeconds = 0;
 const bgmLoopEndSeconds = null;
+
+function getBgmGain(volume = bgmVolume, element = currentBgmElement) {
+    return volume * (element === bgmElement ? endlessBgmVolumeMultiplier : 1);
+}
+
+function getBgmElementVolume(element, volume = bgmVolume) {
+    return Math.min(1, getBgmGain(volume, element));
+}
 
 function playSound(soundElement) {
     const buffer = audioBuffers.get(soundElement.id);
@@ -332,9 +341,9 @@ function setAudioVolume(type, volume) {
     if (type === "bgm") {
         bgmVolume = volume;
         if (bgmGainNode && bgmAudioContext) {
-            bgmGainNode.gain.setTargetAtTime(volume, bgmAudioContext.currentTime, 0.015);
+            bgmGainNode.gain.setTargetAtTime(getBgmGain(volume), bgmAudioContext.currentTime, 0.015);
         }
-        bgmElement.volume = volume;
+        bgmElement.volume = getBgmElementVolume(bgmElement, volume);
         bossBgmElement.volume = volume;
     } else {
         soundEffectsVolume = volume;
@@ -387,7 +396,7 @@ function startBgm() {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!AudioContextClass || window.location.protocol === "file:") {
         selectedBgmElement.loop = shouldLoopBgm();
-        selectedBgmElement.volume = bgmVolume;
+        selectedBgmElement.volume = getBgmElementVolume(selectedBgmElement);
         bgmUsingElement = true;
         selectedBgmElement.play().catch(() => {});
         return;
@@ -397,9 +406,9 @@ function startBgm() {
     bgmAudioContext.resume().catch(() => {});
     if (!bgmGainNode) {
         bgmGainNode = bgmAudioContext.createGain();
-        bgmGainNode.gain.value = bgmVolume;
         bgmGainNode.connect(bgmAudioContext.destination);
     }
+    bgmGainNode.gain.setValueAtTime(getBgmGain(bgmVolume, selectedBgmElement), bgmAudioContext.currentTime);
     if (!soundEffectsGainNode) {
         soundEffectsGainNode = bgmAudioContext.createGain();
         soundEffectsGainNode.gain.value = soundEffectsVolume;
@@ -424,7 +433,7 @@ function startBgm() {
     }).catch(() => {
         if (requestId !== bgmRequestId || currentBgmElement !== selectedBgmElement) return;
         selectedBgmElement.loop = shouldLoopBgm();
-        selectedBgmElement.volume = bgmVolume;
+        selectedBgmElement.volume = getBgmElementVolume(selectedBgmElement);
         bgmUsingElement = true;
         selectedBgmElement.play().catch(() => {});
     });
@@ -448,9 +457,11 @@ function cancelBgmFade() {
     bgmFadeRequestId += 1;
     if (bgmGainNode && bgmAudioContext) {
         bgmGainNode.gain.cancelScheduledValues(bgmAudioContext.currentTime);
-        bgmGainNode.gain.setValueAtTime(bgmVolume, bgmAudioContext.currentTime);
+        bgmGainNode.gain.setValueAtTime(getBgmGain(), bgmAudioContext.currentTime);
     }
-    if (bgmUsingElement && currentBgmElement) currentBgmElement.volume = bgmVolume;
+    if (bgmUsingElement && currentBgmElement) {
+        currentBgmElement.volume = getBgmElementVolume(currentBgmElement);
+    }
 }
 
 function fadeOutBgm(duration) {
@@ -488,10 +499,10 @@ function fadeOutBgm(duration) {
         }
         fadingElement.pause();
         fadingElement.currentTime = 0;
-        fadingElement.volume = bgmVolume;
+        fadingElement.volume = getBgmElementVolume(fadingElement);
         if (bgmGainNode && bgmAudioContext) {
             bgmGainNode.gain.cancelScheduledValues(bgmAudioContext.currentTime);
-            bgmGainNode.gain.setValueAtTime(bgmVolume, bgmAudioContext.currentTime);
+            bgmGainNode.gain.setValueAtTime(getBgmGain(bgmVolume, fadingElement), bgmAudioContext.currentTime);
         }
         currentBgmElement = null;
         bgmUsingElement = false;
