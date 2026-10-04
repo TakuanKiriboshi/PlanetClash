@@ -199,7 +199,7 @@ let soundEffectsGainNode = null;
 const audioBuffers = new Map();
 const audioBufferPromises = new Map();
 let bgmVolume = 0.5;
-let soundEffectsVolume = 0.7;
+let soundEffectsVolume = 0.3;
 const bgmLoopStartSeconds = 0;
 const bgmLoopEndSeconds = null;
 
