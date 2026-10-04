@@ -41,8 +41,11 @@ body {
     position: absolute;
     inset: 0;
     z-index: 40;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    padding: 32px 0 24px;
     background:
         radial-gradient(ellipse at 50% 43%, rgba(40, 83, 130, .42), transparent 38%),
         rgba(4, 12, 22, .94);
@@ -54,7 +57,41 @@ body {
 }
 
 .title-screen-content {
-    margin-top: -24px;
+    margin: auto 0;
+}
+
+.mode-select {
+    display: grid;
+    width: min(340px, 84vw);
+    gap: 10px;
+    margin: 0 auto;
+}
+
+.mode-select button {
+    display: grid;
+    gap: 5px;
+    padding: 13px 18px;
+    border: 1px solid rgba(159, 184, 209, .38);
+    border-radius: 4px;
+    background: rgba(18, 39, 61, .9);
+    color: #f3f7fb;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+}
+
+.mode-select button:hover {
+    border-color: #f0b273;
+    background: #183653;
+}
+
+.mode-select button strong {
+    color: #f0b273;
+}
+
+.mode-select button span {
+    color: #9fb8d1;
+    font-size: 12px;
 }
 
 .title-screen-content .game-over-label {
@@ -109,28 +146,12 @@ body {
 }
 
 .title-screen-content h1 {
-    margin: 12px 0 28px;
+    margin: 12px 0 22px;
     color: #f3f7fb;
     font-family: "Trebuchet MS", "Yu Gothic", sans-serif;
     font-size: 56px;
     line-height: .98;
     text-shadow: 0 0 32px rgba(115, 190, 255, .4);
-}
-
-#start-game {
-    min-width: 210px;
-    padding: 13px 28px;
-    border: 1px solid #f0b273;
-    border-radius: 4px;
-    background: #d89558;
-    color: #1a160f;
-    cursor: pointer;
-    font: inherit;
-    font-weight: bold;
-}
-
-#start-game:hover {
-    background: #f0b273;
 }
 
 .title-screen-hint {
@@ -140,11 +161,7 @@ body {
 }
 
 .title-screen-credits {
-    position: absolute;
-    right: 0;
-    bottom: 20px;
-    left: 0;
-    margin: 0;
+    margin: 24px 0 0;
     color: #71869b;
     font-size: 11px;
     letter-spacing: .12em;
@@ -154,6 +171,23 @@ body {
     margin-left: 8px;
     color: #d8e6f2;
     letter-spacing: 0;
+}
+
+.secondary-menu-button {
+    margin-top: 12px;
+    padding: 11px 28px;
+    border: 1px solid rgba(159, 184, 209, .38);
+    border-radius: 4px;
+    background: rgba(18, 39, 61, .9);
+    color: #d8e6f2;
+    cursor: pointer;
+    font: inherit;
+    font-weight: bold;
+}
+
+.secondary-menu-button:hover {
+    border-color: #8ec8ff;
+    background: #183653;
 }
 
 #ball {
@@ -193,6 +227,22 @@ body {
     animation: planet-destroy .3s ease-out forwards;
 }
 
+#ball.is-damaged {
+    animation: planet-damage .36s steps(2, end);
+}
+
+@keyframes planet-damage {
+    0%, 100% {
+        filter: none;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, .25);
+    }
+
+    25%, 75% {
+        filter: sepia(1) saturate(8) hue-rotate(315deg) brightness(1.4);
+        box-shadow: 0 0 28px rgba(255, 48, 58, .95);
+    }
+}
+
 @keyframes planet-destroy {
     0% {
         filter: brightness(1);
@@ -222,6 +272,443 @@ body {
     font-size: 14px;
     font-weight: bold;
     letter-spacing: .16em;
+}
+
+#boss-meteor {
+    position: absolute;
+    top: 24%;
+    left: 50%;
+    width: min(78vw, 82vh);
+    aspect-ratio: 1;
+    border: 3px solid rgba(147, 111, 45, .36);
+    border-radius: 50%;
+    background:
+        radial-gradient(ellipse at 32% 26%, rgba(199, 156, 73, .22), transparent 12%),
+        radial-gradient(ellipse at 68% 62%, rgba(7, 12, 22, .96) 0 10%, transparent 11%),
+        radial-gradient(ellipse at 45% 75%, rgba(10, 14, 22, .92) 0 16%, transparent 17%),
+        radial-gradient(circle at 38% 34%, #5a4828 0, #332b20 32%, #171b22 68%, #090f18 100%);
+    box-shadow: inset -24px -18px 36px rgba(0, 0, 0, .78);
+    opacity: .66;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(1);
+    z-index: 0;
+}
+
+#boss-meteor::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 38% 34%, rgba(255, 218, 141, .72), rgba(255, 189, 77, .22) 55%, transparent 78%);
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+}
+
+#boss-meteor.is-damaged {
+    animation: boss-hit-shake .34s steps(2, end);
+}
+
+#boss-meteor.is-damaged::after {
+    background: rgba(210, 215, 222, .72);
+    animation: boss-hit-flash .34s steps(2, end);
+}
+
+#boss-meteor.is-giant-charging {
+    animation: boss-giant-charge .16s steps(2, end) infinite;
+}
+
+@keyframes boss-giant-charge {
+    0%, 100% {
+        filter: drop-shadow(0 0 8px rgba(255, 207, 83, .5));
+        translate: 0 0;
+    }
+
+    25%, 75% {
+        filter: drop-shadow(0 0 34px rgba(255, 193, 43, 1));
+        translate: -4px 1px;
+    }
+
+    50% {
+        filter: drop-shadow(0 0 22px rgba(255, 226, 116, .9));
+        translate: 4px -1px;
+    }
+}
+
+@keyframes boss-hit-shake {
+    0%, 100% {
+        translate: 0 0;
+    }
+
+    25%, 75% {
+        translate: -4px 0;
+    }
+
+    50% {
+        translate: 4px 0;
+    }
+}
+
+@keyframes boss-hit-flash {
+    0%, 100% {
+        opacity: 0;
+    }
+
+    25%, 75% {
+        opacity: .8;
+    }
+}
+
+#boss-meteor.is-timeout {
+    animation: boss-timeout-fade .28s ease-out forwards;
+}
+
+#boss-meteor.is-defeated {
+    animation: boss-destroyed .5s ease-in forwards;
+}
+
+#game.is-boss-impacting {
+    animation: boss-impact-shake .34s ease-out;
+}
+
+@keyframes boss-timeout-fade {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes boss-destroyed {
+    to {
+        opacity: 0;
+    }
+}
+
+#boss-impact-surface {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 130vw;
+    height: 100vh;
+    clip-path: polygon(
+        0 0, 8% 0, 13% 7%, 20% 2%, 27% 12%, 36% 5%,
+        43% 18%, 51% 8%, 58% 14%, 66% 4%, 73% 11%,
+        82% 3%, 90% 10%, 96% 0, 100% 0, 100% 100%, 0 100%
+    );
+    background: linear-gradient(180deg, #94713b 0%, #463821 14%, #211e1c 38%, #11151d 100%);
+    pointer-events: none;
+    transform: translate3d(-50%, -95vh, 0);
+    z-index: 3;
+}
+
+#boss-impact-surface[hidden] {
+    display: none;
+}
+
+#boss-impact-surface.is-entering {
+    animation: boss-surface-impact .42s cubic-bezier(.25, .7, .35, 1) forwards;
+}
+
+@keyframes boss-surface-impact {
+    to {
+        transform: translate3d(-50%, 26vh, 0);
+    }
+}
+
+@keyframes boss-impact-shake {
+    0%, 100% {
+        transform: translate3d(0, 0, 0);
+    }
+
+    20%, 60% {
+        transform: translate3d(-4px, 1px, 0);
+    }
+
+    40%, 80% {
+        transform: translate3d(4px, -1px, 0);
+    }
+}
+
+#ball.is-boss-destroying {
+    animation: boss-planet-destroy .42s ease-out forwards;
+}
+
+@keyframes boss-planet-destroy {
+    0%, 15% {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+#boss-burst {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 76px;
+    height: 76px;
+    border: 2px solid rgba(255, 225, 157, .86);
+    border-radius: 50%;
+    background:
+        radial-gradient(circle, rgba(255, 255, 232, .95) 0 8%, rgba(255, 209, 117, .75) 22%, rgba(255, 143, 50, .25) 48%, transparent 72%);
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(.35);
+    z-index: 4;
+}
+
+#boss-burst[hidden] {
+    display: none;
+}
+
+#boss-burst.is-impact {
+    animation: boss-burst-impact .38s ease-out both;
+}
+
+#boss-burst.is-final {
+    width: 180px;
+    height: 180px;
+    animation: boss-burst-final .5s ease-out both;
+}
+
+@keyframes boss-burst-impact {
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(.9);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.45);
+    }
+}
+
+@keyframes boss-burst-final {
+    25% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.7);
+    }
+}
+
+#game .boss-attack-projectile {
+    width: 22px;
+    height: 22px;
+    box-shadow: 0 0 18px rgba(255, 205, 91, .95);
+    z-index: 4;
+    filter: brightness(var(--depth-brightness, 1));
+    opacity: var(--depth-opacity, 1);
+    transform: translate(-50%, -50%) scale(var(--depth-scale, 1));
+    transition: filter .08s linear, opacity .08s linear, transform .08s linear;
+}
+
+#game .boss-giant-backdrop {
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    border: 3px solid #ffe083;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 26%, #fff2a8, #ffd45b 24%, #bd741e 68%, #6f3d16);
+    box-shadow: 0 0 35px rgba(255, 197, 57, .95);
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(.5);
+    z-index: 1;
+}
+
+#game .boss-giant-hazard,
+#game .boss-giant-return-projectile {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border: 4px solid #ffe18a;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 32% 26%, rgba(255, 247, 184, .9), transparent 20%),
+        radial-gradient(circle at 58% 70%, rgba(255, 187, 46, .62), transparent 44%),
+        radial-gradient(circle at 38% 34%, #ffdb65 0, #d39427 48%, #805019 82%, #402b18 100%);
+    box-shadow: 0 0 30px rgba(255, 192, 42, .95), inset -12px -10px 18px rgba(57, 35, 13, .48);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+}
+
+#game .boss-giant-hazard::after {
+    position: absolute;
+    right: 12%;
+    bottom: 10%;
+    color: #fff7d0;
+    content: attr(data-hits);
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 0 0 8px #9d4e0b;
+}
+
+#game .boss-giant-hazard.is-knocked-away {
+    filter: brightness(1.3);
+}
+
+#game .boss-giant-return-projectile {
+    border-color: #fff1a8;
+    box-shadow: 0 0 48px rgba(255, 211, 70, 1), inset -18px -15px 24px rgba(57, 35, 13, .4);
+}
+
+#boss-meteor[hidden],
+#boss-hud[hidden] {
+    display: none;
+}
+
+#boss-hud {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    z-index: 5;
+    width: min(42vw, 280px);
+    transform: translateX(-50%);
+}
+
+#boss-announcement {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 8;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    color: rgba(255, 239, 205, .76);
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: bold;
+    letter-spacing: .04em;
+    text-align: center;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .75), 0 0 18px rgba(245, 185, 73, .2);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    animation: boss-announcement-in .24s ease-out both;
+}
+
+#boss-announcement.is-countdown {
+    color: #ff626a;
+    font-size: clamp(54px, 10vw, 86px);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-shadow: 0 0 12px rgba(255, 46, 58, .45), 0 2px 16px rgba(0, 0, 0, .85);
+    animation: boss-countdown-pulse .9s ease-in-out both;
+}
+
+#boss-announcement[hidden] {
+    display: none;
+}
+
+@keyframes boss-announcement-in {
+    from {
+        opacity: 0;
+        scale: .92;
+    }
+
+    to {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+@keyframes boss-countdown-pulse {
+    0% {
+        opacity: .65;
+        transform: translate(-50%, -50%) scale(.78);
+    }
+
+    45% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+
+    100% {
+        opacity: .9;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #boss-announcement,
+    #boss-announcement.is-countdown,
+    #boss-meteor.is-timeout,
+    #boss-meteor.is-defeated,
+    #boss-meteor.is-damaged,
+    #boss-meteor.is-damaged::after,
+    #boss-meteor.is-giant-charging,
+    #game.is-boss-impacting,
+    #boss-impact-surface.is-entering,
+    #ball.is-boss-destroying,
+    #boss-burst.is-impact,
+    #boss-burst.is-final,
+    .boss-split-warning,
+    .boss-giant-hazard.is-knocked-away {
+        animation: none;
+    }
+
+    #boss-meteor.is-timeout {
+        opacity: 0;
+    }
+
+    #boss-impact-surface.is-entering {
+        transform: translate3d(-50%, 28vh, 0);
+    }
+
+    #ball.is-boss-destroying {
+        opacity: 0;
+    }
+}
+
+.boss-time {
+    margin-bottom: 7px;
+    color: #d8e6f2;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: .12em;
+    text-align: center;
+}
+
+.boss-time strong {
+    margin-left: 7px;
+    color: #fff;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;
+}
+
+.boss-health-heading {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    color: #d8e6f2;
+    font-size: 10px;
+    font-weight: bold;
+    letter-spacing: .12em;
+}
+
+.boss-health-heading strong {
+    color: #f2c875;
+    font-variant-numeric: tabular-nums;
+}
+
+.boss-health-track {
+    height: 9px;
+    border: 1px solid rgba(206, 173, 112, .55);
+    background: rgba(18, 22, 29, .95);
+}
+
+#boss-health-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #8d5e27, #edc66e);
+    box-shadow: 0 0 12px rgba(237, 198, 110, .45);
+    transform: scaleX(1);
+    transform-origin: left center;
+    transition: transform .12s linear;
+}
+
+#game.is-boss-mode #speed-meter {
+    top: 91px;
 }
 
 #score-value {
@@ -320,6 +807,12 @@ body {
     animation: score-rise .7s ease-out forwards;
 }
 
+.damage-popup {
+    color: #ff4f5b;
+    font-size: 20px;
+    text-shadow: 0 0 10px rgba(255, 40, 52, .9);
+}
+
 .explosion {
     position: absolute;
     z-index: 3;
@@ -392,6 +885,10 @@ body {
     border-radius: 6px;
     background: rgba(18, 39, 61, .9);
     cursor: pointer;
+}
+
+#menu-toggle[hidden] {
+    display: none;
 }
 
 #menu-toggle span {
@@ -519,6 +1016,46 @@ body {
     box-shadow: 0 0 18px rgba(180, 91, 255, .9);
 }
 
+.boss-split-warning {
+    position: absolute;
+    width: 92px;
+    height: 92px;
+    border: 2px solid rgba(255, 101, 72, .9);
+    border-radius: 50%;
+    background: rgba(231, 67, 43, .12);
+    box-shadow: 0 0 18px rgba(255, 77, 50, .7), inset 0 0 14px rgba(255, 77, 50, .32);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    animation: boss-split-warning-pulse .3s ease-in-out infinite alternate;
+}
+
+.boss-split-giant {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 3px solid #ff7955;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 28%, #ff9a70, #c83e25 60%, #702018 100%);
+    box-shadow: 0 0 28px rgba(255, 70, 43, .95), inset -10px -8px 18px rgba(65, 12, 8, .48);
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(.12);
+    z-index: 3;
+}
+
+.meteor.boss-split-fragment {
+    width: 18px;
+    height: 18px;
+    border-color: #ff9673;
+    background: radial-gradient(circle at 35% 30%, #ffb090, #c83e25 68%);
+    box-shadow: 0 0 14px rgba(255, 77, 50, .95);
+}
+
+@keyframes boss-split-warning-pulse {
+    from { opacity: .4; }
+    to { opacity: 1; }
+}
+
 .meteor-purple.is-shaking {
     animation: purple-shake .08s linear infinite;
 }
@@ -549,6 +1086,12 @@ body {
         black-hole-pulse .8s ease-in-out .2s infinite alternate;
 }
 
+.black-hole.boss-gravity-wave {
+    border-color: rgba(255, 211, 112, .95);
+    background: radial-gradient(circle at center, #020208 0 38%, #24192f 48%, #8b6230 56%, rgba(74, 53, 24, .4) 70%);
+    box-shadow: 0 0 22px rgba(255, 193, 82, .78), inset 0 0 18px #05020b;
+}
+
 .black-hole.is-closing {
     animation: black-hole-disappear .2s linear forwards;
 }
@@ -563,6 +1106,12 @@ body {
     transform: translate(-50%, -50%);
     z-index: 0;
     animation: black-hole-warning-pulse .5s ease-in-out infinite alternate;
+}
+
+.black-hole-warning.boss-gravity-wave-warning {
+    border-color: rgba(255, 211, 112, .95);
+    background: rgba(222, 157, 55, .12);
+    box-shadow: 0 0 16px rgba(255, 193, 82, .68);
 }
 
 @keyframes black-hole-appear {
@@ -638,6 +1187,50 @@ body {
     user-select: text;
 }
 
+#boss-result {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 10;
+    width: min(88vw, 360px);
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    padding: 32px 24px;
+    border: 1px solid rgba(187, 217, 241, .24);
+    background: rgba(7, 17, 31, .95);
+    text-align: center;
+    transform: translate(-50%, -50%);
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+#boss-result[hidden] {
+    display: none;
+}
+
+#boss-result h1 {
+    margin: 0 0 18px;
+    font-size: 28px;
+}
+
+#boss-result p:not(.game-over-label) {
+    margin: 10px 0;
+    color: #b2c5d8;
+}
+
+#boss-result p strong {
+    display: block;
+    margin-top: 4px;
+    color: #fff;
+    font-size: 26px;
+    font-variant-numeric: tabular-nums;
+}
+
+#boss-result .result-total strong {
+    color: #f2c875;
+    font-size: 34px;
+}
+
 #game-over[hidden] {
     display: none;
 }
@@ -666,7 +1259,8 @@ body {
 }
 
 #restart {
-    margin-top: 14px;
+    display: block;
+    margin: 14px auto 0;
     padding: 11px 28px;
     border: 0;
     border-radius: 4px;
@@ -677,17 +1271,42 @@ body {
     font-weight: bold;
 }
 
+#boss-result-retry {
+    display: block;
+    width: 100%;
+    margin: 14px auto 0;
+    padding: 11px 28px;
+    border: 0;
+    border-radius: 4px;
+    background: #d89558;
+    color: #1a160f;
+    cursor: pointer;
+    font: inherit;
+    font-weight: bold;
+}
+
+#boss-result-retry:hover {
+    background: #f0b273;
+}
+
+#boss-result .secondary-menu-button {
+    display: block;
+    width: 100%;
+}
+
 #restart:hover {
     background: #f0b273;
+}
+
+#game-over .secondary-menu-button {
+    margin-top: 14px;
+    display: block;
+    width: 100%;
 }
 
 @media (max-width: 480px) {
     .title-screen-content h1 {
         font-size: 44px;
-    }
-
-    .title-screen-credits {
-        bottom: 16px;
     }
 
     #score {
@@ -704,5 +1323,14 @@ body {
         top: 20px;
         width: 42vw;
         min-width: 150px;
+    }
+
+    #game.is-boss-mode #speed-meter {
+        top: 91px;
+    }
+
+    #boss-hud {
+        top: 18px;
+        width: min(58vw, 280px);
     }
 }
