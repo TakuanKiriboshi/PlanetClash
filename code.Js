@@ -76,7 +76,7 @@ const bossSplitWarningDuration = 850;
 const bossSplitApproachDuration = 1100;
 const bossSplitFragmentCollisionDelay = 300;
 const bossSplitTargetInsetRatio = 0.12;
-const bossTimeBonusPerSecond = 10000;
+const bossTimeBonusPerSecond = 5000;
 const bossNoMissScoreMultiplier = 1.2;
 const meteorDefinitions = [
     {
